@@ -2053,7 +2053,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   
   address=address >>7;
   //my_map[m_sid][kerne_id_temp][address]++;
-  printf("SM %d,kernel %d:addr%u %d",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
+  printf("SM %d,kernel %d:addr%u %d\n",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
   if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {

@@ -1091,7 +1091,6 @@ void scheduler_unit::order_lrr(
     }
     result_list.push_back(*iter);
   }
-  
 }
 
 /**
@@ -1149,7 +1148,6 @@ void scheduler_unit::cycle() {
   bool issued_inst = false;  // of these we issued one
 
   order_warps();
-  int count_warp=0;
   for (std::vector<shd_warp_t *>::const_iterator iter =
            m_next_cycle_prioritized_warps.begin();
        iter != m_next_cycle_prioritized_warps.end(); iter++) {
@@ -1157,7 +1155,6 @@ void scheduler_unit::cycle() {
     if ((*iter) == NULL || (*iter)->done_exit()) {
       continue;
     }
-	count_warp++;
     SCHED_DPRINTF("Testing (warp_id %u, dynamic_warp_id %u)\n",
                   (*iter)->get_warp_id(), (*iter)->get_dynamic_warp_id());
     unsigned warp_id = (*iter)->get_warp_id();
@@ -1433,7 +1430,6 @@ void scheduler_unit::cycle() {
     }
   }
 
-  printf("# of warps executed conditional branch instructions(no matter they have divergence or not:%d",count_warp);
   // issue stall statistics:
   if (!valid_inst)
     m_stats->shader_cycle_distro[0]++;  // idle or control hazard

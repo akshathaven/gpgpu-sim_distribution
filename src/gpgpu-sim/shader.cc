@@ -47,10 +47,20 @@
 #include "stat-tool.h"
 #include "traffic_breakdown.h"
 #include "visualizer.h"
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+#include <map>
 
 #define PRIORITIZE_MSHR_OVER_WB 1
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+map <int,map<int,int>> my_map[80];
+map <int,map<int,int>>::iterator itr;
+map <int,int>::iterator ptr;
+
+int kerne_id_temp=0;
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
     new_addr_type addr, mem_access_type type, unsigned size, bool wr,
@@ -500,6 +510,7 @@ void shader_core_ctx::init_warps(unsigned cta_id, unsigned start_thread,
   //
   address_type start_pc = next_pc(start_thread);
   unsigned kernel_id = kernel.get_uid();
+  kerne_id_temp=kernel_id; //edited code
   if (m_config->model == POST_DOMINATOR) {
     unsigned start_warp = start_thread / m_config->warp_size;
     unsigned warp_per_cta = cta_size / m_config->warp_size;
@@ -1080,6 +1091,7 @@ void scheduler_unit::order_lrr(
     }
     result_list.push_back(*iter);
   }
+  
 }
 
 /**
@@ -1137,6 +1149,7 @@ void scheduler_unit::cycle() {
   bool issued_inst = false;  // of these we issued one
 
   order_warps();
+  int count_warp=0;
   for (std::vector<shd_warp_t *>::const_iterator iter =
            m_next_cycle_prioritized_warps.begin();
        iter != m_next_cycle_prioritized_warps.end(); iter++) {
@@ -1144,6 +1157,7 @@ void scheduler_unit::cycle() {
     if ((*iter) == NULL || (*iter)->done_exit()) {
       continue;
     }
+	count_warp++;
     SCHED_DPRINTF("Testing (warp_id %u, dynamic_warp_id %u)\n",
                   (*iter)->get_warp_id(), (*iter)->get_dynamic_warp_id());
     unsigned warp_id = (*iter)->get_warp_id();
@@ -1419,6 +1433,7 @@ void scheduler_unit::cycle() {
     }
   }
 
+  printf("# of warps executed conditional branch instructions(no matter they have divergence or not:%d",count_warp);
   // issue stall statistics:
   if (!valid_inst)
     m_stats->shader_cycle_distro[0]++;  // idle or control hazard
@@ -2037,6 +2052,12 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
 
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
+  
+  unsigned address=access.get_addr();
+  
+  address=address >>7;
+  //my_map[m_sid][kerne_id_temp][address]++;
+  printf("SM %d,kernel %d:addr%u %d",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
   if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {

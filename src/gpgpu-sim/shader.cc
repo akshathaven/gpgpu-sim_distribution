@@ -2803,7 +2803,7 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
     fprintf(fout, "%d, ", *iter);
   }
   fprintf(fout, "\n");
-  File *fptr;
+  FILE *fptr;
   fptr=fopen("output.txt","w");
   for(int i=0;i<80;i++)
   {

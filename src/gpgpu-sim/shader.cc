@@ -59,7 +59,7 @@ using namespace std;
 map <int,map<int,int>> my_map[80];
 map <int,map<int,int>>::iterator itr;
 map <int,int>::iterator ptr;
-unsigned address;
+//unsigned address;
 
 int kerne_id_temp=0;
 
@@ -2050,7 +2050,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
   
-  address=access.get_addr();// address ID
+  unsigned address=access.get_addr();// address ID
   
   address=address >>7;
   my_map[m_sid][kerne_id_temp][address]++; //counter
@@ -2610,7 +2610,7 @@ void ldst_unit::cycle() {
                        GLOBAL_ACC_W) {  // global memory access
           if (m_core->get_config()->gmem_skip_L1D) bypassL1D = true;
         }
-          if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
+         // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
         if (bypassL1D) {
           if (m_next_global == NULL) {
             mf->set_status(IN_SHADER_FETCHED,

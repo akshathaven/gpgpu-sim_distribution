@@ -2049,10 +2049,10 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
   
-  unsigned address=access.get_addr();
+  unsigned address=access.get_addr();// address ID
   
   address=address >>7;
-  //my_map[m_sid][kerne_id_temp][address]++;
+  //my_map[m_sid][kerne_id_temp][address]++; //counter
   printf("SM %d,kernel %d:addr%u %d\n",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
@@ -2803,6 +2803,24 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
     fprintf(fout, "%d, ", *iter);
   }
   fprintf(fout, "\n");
+  File *fptr;
+  fptr=fopen("output.txt","w");
+  for(int i=0;i<80;i++)
+  {
+      fprintf(fptr," %d",i);
+      for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
+      {
+          for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
+          {
+              
+              fprintf(fptr," %d",itr->first);
+              fprintf(fptr," %d",ptr->first);
+              fprintf(fptr," %d",ptr->second);
+              fprintf(fptr,"\n");
+          }
+      }
+  }
+     
 }
 
 void gpgpu_sim::shader_print_cache_stats(FILE *fout) const {

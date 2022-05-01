@@ -63,6 +63,8 @@ map <int,int>::iterator ptr;
 
 int kerne_id_temp=0;
 int SM_id=0;
+itr=my_map[SM_id].begin();
+ptr=itr->second.begin();
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
     new_addr_type addr, mem_access_type type, unsigned size, bool wr,

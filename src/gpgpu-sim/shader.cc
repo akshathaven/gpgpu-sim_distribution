@@ -2056,8 +2056,8 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   unsigned address=access.get_addr();// address ID
   
   address=address >>7;
-    int ref_counter=0;
-  ref_counter=my_map[m_sid][kerne_id_temp][address]++; //counter
+    //int ref_counter=0;
+  my_map[m_sid][kerne_id_temp][address]++; //counter
  // printf("SM %d,kernel %d:addr%u %d\n",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
@@ -2068,7 +2068,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
       bypassL1D = true;
   }
-   if(ref_counter<3){bypassL1D = true;}
+   
   if (bypassL1D) {
     // bypass L1 cache
     unsigned control_size =
@@ -2617,10 +2617,12 @@ void ldst_unit::cycle() {
         }
          // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
           //modified code
-         /* while(SM_id<80)
+          while(SM_id<80)
           {
+              if(SM_id==0){itr=my_map[SM_id].begin();}
               while(itr!=my_map[SM_id].end())
               {
+                  if(itr==my_map[SM_id].begin()){ptr=itr->second.begin();}
                   while(ptr!=itr->second.end())
                   {
                     if(ptr->second<3)
@@ -2635,7 +2637,7 @@ void ldst_unit::cycle() {
               }
               SM_id++;
               break;
-          }*/
+          }
           //end
         if (bypassL1D) {
           if (m_next_global == NULL) {

@@ -63,8 +63,7 @@ map <int,int>::iterator ptr;
 
 int kerne_id_temp=0;
 int SM_id=0;
-itr=my_map[SM_id].begin();
-ptr=itr->second.begin();
+
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
     new_addr_type addr, mem_access_type type, unsigned size, bool wr,
@@ -2139,7 +2138,8 @@ sfu::sfu(register_set *result_port, const shader_core_config *config,
     : pipelined_simd_unit(result_port, config, config->max_sfu_latency, core) {
   m_name = "SFU";
 }
-
+itr=my_map[SM_id].begin();
+ptr=itr->second.begin();
 tensor_core::tensor_core(register_set *result_port,
                          const shader_core_config *config,
                          shader_core_ctx *core)

@@ -59,6 +59,7 @@ using namespace std;
 map <int,map<int,int>> my_map[80];
 map <int,map<int,int>>::iterator itr;
 map <int,int>::iterator ptr;
+unsigned address;
 
 int kerne_id_temp=0;
 
@@ -2049,7 +2050,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
   
-  unsigned address=access.get_addr();// address ID
+  address=access.get_addr();// address ID
   
   address=address >>7;
   my_map[m_sid][kerne_id_temp][address]++; //counter

@@ -449,6 +449,27 @@ void shader_core_ctx::create_exec_pipeline() {
   for (unsigned i = 0; i < num_result_bus; i++) {
     this->m_result_bus.push_back(new std::bitset<MAX_ALU_LATENCY>());
   }
+    
+    //edited code
+  int SM=0;
+  int kernel=0;
+  int addr=0;
+  int counter=0;
+  if(flag1==0)
+  {
+    FP=fopen("output.txt","r");
+    if(FP==NULL)
+      profiling=1;
+    else
+    {
+      while(fscanf(FP,"%d %d %d %d",&SM,&kernel,&addr,&counter)!=EOF){
+      my_map[SM][kernel][addr]=counter
+      }
+      fclose(FP);
+    }
+    flag1=1;
+  }
+    //ends
 }
 
 shader_core_ctx::shader_core_ctx(class gpgpu_sim *gpu,
@@ -499,25 +520,7 @@ void shader_core_ctx::reinit(unsigned start_thread, unsigned end_thread,
     m_occupied_cta_to_hwtid.clear();
     m_active_warps = 0;
   }
-  //edited code
-  int SM=0;
-  int kernel=0
-  int addr=0;
-  int counter=0;
-  if(flag1==0)
-  {
-    FP=fopen("output.txt","r");
-    if(FP==NULL)
-      profiling=1;
-    else
-    {
-      while(fscanf(FP,"%d %d %d %d",&SM,&kernel,&addr,&counter)!=EOF){
-      my_map[SM][kernel][addr]=counter
-      }
-      fclose(FP);
-    }
-    flag1=1;
-  }
+  
     //ends
   for (unsigned i = start_thread; i < end_thread; i++) {
     m_threadState[i].n_insn = 0;

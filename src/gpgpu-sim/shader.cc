@@ -62,6 +62,7 @@ map <int,int>::iterator ptr;
 //unsigned address;
 
 int kerne_id_temp=0;
+int SM_id=0;
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
     new_addr_type addr, mem_access_type type, unsigned size, bool wr,
@@ -2611,6 +2612,27 @@ void ldst_unit::cycle() {
           if (m_core->get_config()->gmem_skip_L1D) bypassL1D = true;
         }
          // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
+          //modified code
+          while(SM_id<80)
+          {
+              while(itr!=my_map[SM_id].end())
+              {
+                  while(ptr!=itr->second.end())
+                  {
+                    if(ptr->second<3)
+                    {
+                        bypassL1D=true;
+                    }
+                      ptr++;
+                      break;
+                  }
+                  itr++;
+                  break;
+              }
+              SM_id++;
+              break;
+          }
+          //end
         if (bypassL1D) {
           if (m_next_global == NULL) {
             mf->set_status(IN_SHADER_FETCHED,

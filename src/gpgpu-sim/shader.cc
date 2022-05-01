@@ -56,6 +56,7 @@ using namespace std;
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+FILE *FP;
 map <int,map<int,int>> my_map[80];
 map <int,map<int,int>>::iterator itr;
 map <int,int>::iterator ptr;
@@ -63,7 +64,8 @@ map <int,int>::iterator ptr;
 
 int kerne_id_temp=0;
 int SM_id=0;
-  
+int flag1=0;
+int profiling=0;
 
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
@@ -497,6 +499,26 @@ void shader_core_ctx::reinit(unsigned start_thread, unsigned end_thread,
     m_occupied_cta_to_hwtid.clear();
     m_active_warps = 0;
   }
+  //edited code
+  int SM=0;
+  int kernel=0
+  int addr=0;
+  int counter=0;
+  if(flag1==0)
+  {
+    FP=fopen("output.txt","r");
+    if(FP==NULL)
+      profiling=1;
+    else
+    {
+      while(fscanf(FP,"%d %d %d %d",&SM,&kernel,&addr,&counter)!=EOF){
+      my_map[SM][kernel][addr]=counter
+      }
+      fclose(FP);
+    }
+    flag1=1;
+  }
+    //ends
   for (unsigned i = start_thread; i < end_thread; i++) {
     m_threadState[i].n_insn = 0;
     m_threadState[i].m_cta_id = -1;
@@ -506,6 +528,8 @@ void shader_core_ctx::reinit(unsigned start_thread, unsigned end_thread,
     m_warp[i]->reset();
     m_simt_stack[i]->reset();
   }
+  
+  
 }
 
 void shader_core_ctx::init_warps(unsigned cta_id, unsigned start_thread,
@@ -2057,7 +2081,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   
   address=address >>7;
     //int ref_counter=0;
-  my_map[m_sid][kerne_id_temp][address]++; //counter
+  
  // printf("SM %d,kernel %d:addr%u %d\n",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
@@ -2067,6 +2091,13 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     // skip L1 cache if the option is enabled
     if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
       bypassL1D = true;
+  }
+  if(profiling==1)
+  my_map[m_sid][kerne_id_temp][address]++; //counter
+  else
+  {
+    if(my_map[m_sid][kerne_id_temp][address] < 3)
+    {bypassL1D=true;}
   }
    
   if (bypassL1D) {
@@ -2619,23 +2650,7 @@ void ldst_unit::cycle() {
           //modified code
          
           
-        for(int i=0;i<80;i++)
-  {
-      //fprintf(fptr,"SM %d,",i);
-      for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
-      {
-          //fprintf(fptr," Kernel %d:",itr->first);
-          for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
-          {
-              
-              
-              //fprintf(fptr," addr%d",ptr->first);
-              if(ptr->second<3){bypassL1D=true;}
-             
-          }
-           //fprintf(fptr,"\n");
-      }
-  }
+       
         //end
         if (bypassL1D) {
           if (m_next_global == NULL) {
@@ -2836,19 +2851,21 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
   fptr=fopen("output.txt","w");
   for(int i=0;i<80;i++)
   {
-      fprintf(fptr,"SM %d,",i);
+      
       for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
       {
-          fprintf(fptr," Kernel %d:",itr->first);
+          
           for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
           {
               
-              
-              fprintf(fptr," addr%d",ptr->first);
-              fprintf(fptr," %d,",ptr->second);
+              fprintf(fptr," %d,",i);
+            fprintf(fptr," %d ",itr->first);
+              fprintf(fptr," %d ",ptr->first);
+              fprintf(fptr," %d ",ptr->second);
+            fprintf(fptr,"\n");
              
           }
-           fprintf(fptr,"\n");
+           
       }
   }
      

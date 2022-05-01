@@ -463,7 +463,7 @@ void shader_core_ctx::create_exec_pipeline() {
     else
     {
       while(fscanf(FP,"%d %d %d %d",&SM,&kernel,&addr,&counter)!=EOF){
-      my_map[SM][kernel][addr]=counter
+      my_map[SM][kernel][addr]=counter;
       }
       fclose(FP);
     }

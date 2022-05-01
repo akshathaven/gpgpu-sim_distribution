@@ -2807,17 +2807,18 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
   fptr=fopen("output.txt","w");
   for(int i=0;i<80;i++)
   {
-      fprintf(fptr," %d",i);
+      fprintf(fptr,"SM %d,",i);
       for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
       {
           for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
           {
               
-              fprintf(fptr," %d",itr->first);
-              fprintf(fptr," %d",ptr->first);
-              fprintf(fptr," %d",ptr->second);
-              fprintf(fptr,"\n");
+              fprintf(fptr," Kernel %d:",itr->first);
+              fprintf(fptr," addr%d",ptr->first);
+              fprintf(fptr," %d,",ptr->second);
+             
           }
+           fprintf(fptr,"\n");
       }
   }
      

@@ -2617,28 +2617,26 @@ void ldst_unit::cycle() {
         }
          // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
           //modified code
-          while(SM_id<80)
+         
+          
+        for(int i=0;i<80;i++)
+  {
+      //fprintf(fptr,"SM %d,",i);
+      for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
+      {
+          //fprintf(fptr," Kernel %d:",itr->first);
+          for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
           {
-              if(SM_id==0){itr=my_map[SM_id].begin();}
-              while(itr!=my_map[SM_id].end())
-              {
-                  if(itr==my_map[SM_id].begin()){ptr=itr->second.begin();}
-                  while(ptr!=itr->second.end())
-                  {
-                    if(ptr->second<3)
-                    {
-                        bypassL1D=true;
-                    }
-                      ptr++;
-                      break;
-                  }
-                  itr++;
-                  break;
-              }
-              SM_id++;
-              break;
+              
+              
+              //fprintf(fptr," addr%d",ptr->first);
+              if(ptr->second<3){bypassL1D=true;}
+             
           }
-          //end
+           //fprintf(fptr,"\n");
+      }
+  }
+        //end
         if (bypassL1D) {
           if (m_next_global == NULL) {
             mf->set_status(IN_SHADER_FETCHED,

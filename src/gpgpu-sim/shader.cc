@@ -2064,7 +2064,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
       bypassL1D = true;
   }
-   if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
+   //if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
   if (bypassL1D) {
     // bypass L1 cache
     unsigned control_size =

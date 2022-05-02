@@ -2652,7 +2652,7 @@ void ldst_unit::cycle() {
          // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
           //modified code
          
-   unsigned address=access.get_addr();// address ID
+   unsigned address=mf->get_addr();// address ID
   
   address=address >>7;
           if(profiling==1)

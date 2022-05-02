@@ -2099,7 +2099,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
  map_ref[m_sid][kernel_temp][address]++; //counter
  else
  {
-    if(my_map[m_sid][kernel_temp][address] < 3)
+    if(map_ref[m_sid][kernel_temp][address] < 3)
     {bypassL1D=true;}
   }
    
@@ -2174,7 +2174,7 @@ sfu::sfu(register_set *result_port, const shader_core_config *config,
     : pipelined_simd_unit(result_port, config, config->max_sfu_latency, core) {
   m_name = "SFU";
 }
-//itr=my_map[SM_id].begin();
+//itr=map_ref[SM_id].begin();
 //ptr=itr->second.begin();
 tensor_core::tensor_core(register_set *result_port,
                          const shader_core_config *config,
@@ -2649,7 +2649,7 @@ void ldst_unit::cycle() {
                        GLOBAL_ACC_W) {  // global memory access
           if (m_core->get_config()->gmem_skip_L1D) bypassL1D = true;
         }
-         // if(my_map[m_sid][kernel_temp][address]<3){bypassL1D = true;}
+         // if(map_ref[m_sid][kernel_temp][address]<3){bypassL1D = true;}
           //modified code
          
    unsigned address=mf->get_addr();// address ID
@@ -2659,7 +2659,7 @@ void ldst_unit::cycle() {
  map_ref[m_sid][kernel_temp][address]++; //counter
   else
   {
-    if(my_map[m_sid][kernel_temp][address] < 3)
+    if(map_ref[m_sid][kernel_temp][address] < 3)
     {bypassL1D=true;}
   }
    

@@ -2096,7 +2096,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
       bypassL1D = true;
   }
  if(profiling==1)
- { my_map[m_sid][kerne_id_temp][address]++; //counter
+ { my_map[m_sid][ m_core->get_kernel()->get_uid()][address]++; //counter
  }
     //int k=0;
  else

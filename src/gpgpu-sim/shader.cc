@@ -57,15 +57,15 @@ using namespace std;
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 FILE *FP;
-map <int,map<int,int>>map_ref[80];
+map <int,map<int,int>> my_map[80];
 map <int,map<int,int>>::iterator itr;
 map <int,int>::iterator ptr;
 //unsigned address;
 
-int kernel_temp=0;
+int kerne_id_temp=0;
 int SM_id=0;
-int flag_1=0;
-int profile=0;
+int flag1=0;
+int profiling=0;
 
 
 mem_fetch *shader_core_mem_fetch_allocator::alloc(
@@ -455,19 +455,19 @@ void shader_core_ctx::create_exec_pipeline() {
   int kernel=0;
   int addr=0;
   int counter=0;
-  if(flag_1==0)
+  if(flag1==0)
   {
     FP=fopen("output.txt","r");
     if(FP==NULL)
-      profile=1;
+      profiling=1;
     else
     {
       while(fscanf(FP,"%d %d %d %d",&SM,&kernel,&addr,&counter)!=EOF){
-     map_ref[SM][kernel][addr]=counter;
+      my_map[SM][kernel][addr]=counter;
       }
       fclose(FP);
     }
-    flag_1=1;
+    flag1=1;
   }
     //ends
 }
@@ -541,7 +541,7 @@ void shader_core_ctx::init_warps(unsigned cta_id, unsigned start_thread,
   //
   address_type start_pc = next_pc(start_thread);
   unsigned kernel_id = kernel.get_uid();
-  kernel_temp=kernel_id; //edited code
+  kerne_id_temp=kernel_id; //edited code
   if (m_config->model == POST_DOMINATOR) {
     unsigned start_warp = start_thread / m_config->warp_size;
     unsigned warp_per_cta = cta_size / m_config->warp_size;
@@ -2080,7 +2080,12 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
   
+  unsigned address=access.get_addr();// address ID
   
+  address=address >>7;
+    //int ref_counter=0;
+  
+ // printf("SM %d,kernel %d:addr%u %d\n",m_sid,kerne_id_temp,address,my_map[m_sid][kerne_id_temp][address]++);
 
   bool bypassL1D = false;
   if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {
@@ -2090,19 +2095,13 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
       bypassL1D = true;
   }
-unsigned address=access.get_addr();// address ID
-  
-  address=address >>7;
-  
-     if(profile==1)
- map_ref[m_sid][kernel_temp][address]; //counter
-else
-{
-    map_ref[m_sid][kernel_temp][address]++;
-   
-    if(map_ref[m_sid][kernel_temp][address] < 3)
+ if(profiling==1)
+  my_map[m_sid][kerne_id_temp][address]++; //counter
+ else
+ {
+    if(my_map[m_sid][kerne_id_temp][address] < 3)
     {bypassL1D=true;}
- }
+  }
    
   if (bypassL1D) {
     // bypass L1 cache
@@ -2175,7 +2174,7 @@ sfu::sfu(register_set *result_port, const shader_core_config *config,
     : pipelined_simd_unit(result_port, config, config->max_sfu_latency, core) {
   m_name = "SFU";
 }
-//itr=map_ref[SM_id].begin();
+//itr=my_map[SM_id].begin();
 //ptr=itr->second.begin();
 tensor_core::tensor_core(register_set *result_port,
                          const shader_core_config *config,
@@ -2650,17 +2649,17 @@ void ldst_unit::cycle() {
                        GLOBAL_ACC_W) {  // global memory access
           if (m_core->get_config()->gmem_skip_L1D) bypassL1D = true;
         }
-         // if(map_ref[m_sid][kernel_temp][address]<3){bypassL1D = true;}
+         // if(my_map[m_sid][kerne_id_temp][address]<3){bypassL1D = true;}
           //modified code
          
    unsigned address=mf->get_addr();// address ID
   
   address=address >>7;
-          if(profile==1)
- map_ref[m_sid][kernel_temp][address]++; //counter
+          if(profiling==1)
+  my_map[m_sid][kerne_id_temp][address]++; //counter
   else
   {
-    if(map_ref[m_sid][kernel_temp][address] < 3)
+    if(my_map[m_sid][kerne_id_temp][address] < 3)
     {bypassL1D=true;}
   }
    
@@ -2866,7 +2865,7 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
   for(int i=0;i<80;i++)
   {
       
-      for(itr =map_ref[i].begin();itr !=map_ref[i].end();itr++)
+      for(itr = my_map[i].begin();itr != my_map[i].end();itr++)
       {
           
           for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)

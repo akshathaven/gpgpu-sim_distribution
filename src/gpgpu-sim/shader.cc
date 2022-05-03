@@ -2658,9 +2658,10 @@ void ldst_unit::cycle() {
    unsigned address=mf->get_addr();// address ID
   
   address=address >>7;
-          //if(profiling==1)
- // my_map[m_sid][kerne_id_temp][address]++; //counter
-              //int k=0;
+         if(profiling==0){
+ if(my_map[m_sid][kerne_id_temp][address]<3) //counter
+              {bypassL1D=true;}//int k=0;
+         }
  // else
  // {
     //if(my_map[m_sid][kerne_id_temp][address] < 3)

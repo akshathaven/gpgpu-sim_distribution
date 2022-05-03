@@ -2876,10 +2876,10 @@ void gpgpu_sim::shader_print_scheduler_stat(FILE *fout,
           for(ptr = itr->second.begin();ptr != itr->second.end();ptr++)
           {
               
-              fprintf(fptr," %d,",i);
-            fprintf(fptr," %d ",itr->first);
-              fprintf(fptr," %d ",ptr->first);
-              fprintf(fptr," %d ",ptr->second);
+              fprintf(fptr,"SM %d,",i);
+            fprintf(fptr,"kernel %d: ",itr->first);
+              fprintf(fptr," addr %d, ",ptr->first);
+              fprintf(fptr," ref %d ",ptr->second);
             fprintf(fptr,"\n");
              
           }

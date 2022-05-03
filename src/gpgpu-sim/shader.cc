@@ -2083,9 +2083,14 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   unsigned address=access.get_addr();// address ID
   
   address=address >>7;
-    //int ref_counter=0;
   
- // printf("SM %d,kernel %d:addr%u %d\n",m_sid,kernel_temp,address,my_map[m_sid][kernel_temp][address]++);
+     if(profile==1)
+ map_ref[m_sid][kernel_temp][address]++; //counter
+ else
+ {
+    if(map_ref[m_sid][kernel_temp][address] < 3)
+    {bypassL1D=true;}
+  }
 
   bool bypassL1D = false;
   if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {
@@ -2095,13 +2100,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
       bypassL1D = true;
   }
- if(profile==1)
- map_ref[m_sid][kernel_temp][address]++; //counter
- else
- {
-    if(map_ref[m_sid][kernel_temp][address] < 3)
-    {bypassL1D=true;}
-  }
+
    
   if (bypassL1D) {
     // bypass L1 cache

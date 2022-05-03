@@ -2102,7 +2102,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
  else
  {
      //my_map[m_sid][kerne_id_temp][address]++; 
-    if(my_map[m_sid][kerne_id_temp][address] < 3)
+    if(my_map[m_sid][ m_core->get_kernel()->get_uid()][address] < 3)
     {bypassL1D=true;}
   }
    
@@ -2659,7 +2659,7 @@ void ldst_unit::cycle() {
   
   address=address >>7;
          if(profiling==0){
- if(my_map[m_sid][kerne_id_temp][address]<3) //counter
+ if(my_map[m_sid][ m_core->get_kernel()->get_uid()][address]<3) //counter
               {bypassL1D=true;}//int k=0;
          }
  // else

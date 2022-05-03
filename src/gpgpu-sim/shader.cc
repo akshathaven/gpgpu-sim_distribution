@@ -2094,13 +2094,15 @@ unsigned address=access.get_addr();// address ID
   
   address=address >>7;
   
-    // if(profile==1)
- map_ref[m_sid][kernel_temp][address]++; //counter
-// else
-// {
-   // if(map_ref[m_sid][kernel_temp][address] < 3)
-    //{bypassL1D=true;}
-  //}
+     if(profile==1)
+ map_ref[m_sid][kernel_temp][address]; //counter
+else
+{
+    map_ref[m_sid][kernel_temp][address]++;
+   
+    if(map_ref[m_sid][kernel_temp][address] < 3)
+    {bypassL1D=true;}
+ }
    
   if (bypassL1D) {
     // bypass L1 cache

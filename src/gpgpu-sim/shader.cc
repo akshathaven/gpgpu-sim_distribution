@@ -2099,6 +2099,7 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   my_map[m_sid][kerne_id_temp][address]++; //counter
  else
  {
+     my_map[m_sid][kerne_id_temp][address]++; 
     if(my_map[m_sid][kerne_id_temp][address] < 3)
     {bypassL1D=true;}
   }

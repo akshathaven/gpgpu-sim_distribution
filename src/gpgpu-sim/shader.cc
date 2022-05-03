@@ -2080,7 +2080,17 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
   mem_stage_stall_type stall_cond = NO_RC_FAIL;
   const mem_access_t &access = inst.accessq_back();
   
-  unsigned address=access.get_addr();// address ID
+  
+
+  bool bypassL1D = false;
+  if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {
+    bypassL1D = true;
+  } else if (inst.space.is_global()) {  // global memory access
+    // skip L1 cache if the option is enabled
+    if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
+      bypassL1D = true;
+  }
+unsigned address=access.get_addr();// address ID
   
   address=address >>7;
   
@@ -2091,16 +2101,6 @@ bool ldst_unit::memory_cycle(warp_inst_t &inst,
     if(map_ref[m_sid][kernel_temp][address] < 3)
     {bypassL1D=true;}
   }
-
-  bool bypassL1D = false;
-  if (CACHE_GLOBAL == inst.cache_op || (m_L1D == NULL)) {
-    bypassL1D = true;
-  } else if (inst.space.is_global()) {  // global memory access
-    // skip L1 cache if the option is enabled
-    if (m_core->get_config()->gmem_skip_L1D && (CACHE_L1 != inst.cache_op))
-      bypassL1D = true;
-  }
-
    
   if (bypassL1D) {
     // bypass L1 cache
